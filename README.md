@@ -157,27 +157,29 @@ Following sample plugin content  runs on windows.
 
 
 ```python
-	"""
-	test_runbat test_folder [optional_args...]
+        """
+    test_runbat test_folder [optional_args...]
     Description:
     Generic test plugin that copies    tests/test_folder to the client and
-    then runs tests/test_folder/run.bat. The exit code determines pass/fail (0 is pass, non-zero is fail).Inside the run.bat     script, the unique line ID + any optional parameters are passed into the script.
+    then runs tests/test_folder/run.bat. The exit code determines pass/fail 
+    (0 is pass, non-zero is fail).Inside the run.bat script, 
+    the unique line ID + any optional parameters are passed into the script.
     Examples:
     # Runs tests/Performance11/run.bat task_id
     test_runbat Performance11
     # Runs tests/3DMark11/run.bat task_id   perf_preset.xml
     test_runbat 3DMark11 perf_preset.xml
     Note:  This sample plugin is intended for use with a Windows DUT
-    """
+      """
     import os
     def run(runner, line):
     # First get the test directory we will be running. Since we only
     # have one argument on the line, the test_dir is the whole line test_dir = line
     # Now we check the parameters and make sure they are valid. If we
-	  # detect an error we use the GTA-X helper function runner.add_error().
-	  # This adds a line to the results.txt file like:
-	  #     --err_msg: [message]
-	  # For convenience, we also print a log message to the Runner console
+    # detect an error we use the GTA-X helper function runner.add_error().
+    # This adds a line to the results.txt file like:
+    #     --err_msg: [message]
+    # For convenience, we also print a log message to the Runner console
 	    
 	if test_dir == '':
 	   runner.add_error('You must specify a test folder - Ex: test_runbat myfolder')
@@ -577,10 +579,10 @@ When provisioning test assets on the DUT, GTA-X will place test assets in the fo
 
 | Asset Repository Type | Destination directory
 | --------------------- | ---------------------
-| VPG Global Asset Store (Artifactory)| *<remote_tests_dir>*/*<asset_name>*/*<asset_version>*
-| Quickbuild | *<remote_tests_dir>*/*<configuration>*/*<build_version>*
-| HTTP server | *<remote_tests_dir>*/*<sub_path>*<br>or, if sub_path is not specified:<br>*remote_tests_dir*
-| Local directory, file share, or HTTP server | *<remote_tests_dir>*/*<local_assets>*
+| VPG Global Asset Store (Artifactory)| <*remote_tests_dir*>/<*asset_name*>/<*asset_version*>
+| Quickbuild | <*remote_tests_dir*>/<*configuration*>/<*build_version*>
+| HTTP server | <*remote_tests_dir*>/<*sub_path*><br>or, if sub_path is not specified:<br><*remote_tests_dir*>
+| Local directory, file share, or HTTP server | <*remote_tests_dir*>/<*local_assets*>
 
 Using `runner.get_asset_dest_dir(asset_key)` will return the complete destination directory of the asset independently of the asset repository type.
 
