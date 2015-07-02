@@ -848,8 +848,8 @@ if runner.risdir(vnc_path):
 ```
 ---
 
-#####`.rmakedirs(path, target=None, timeout='0s')`
-This method is a recursive directory creation function. It makes all intermediate-level directories needed to contain the leaf directory and returns the absolute path.  If `target` is supplied, the command will run on the targeted machine.
+#####`.rmakedirs(path, timeout='0s')`
+This method is a recursive directory creation function. It makes all intermediate-level directories needed to contain the leaf directory and returns the absolute path.  
 
 Example usage:
 
