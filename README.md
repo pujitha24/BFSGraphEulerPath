@@ -46,10 +46,12 @@ to writing custom plugins.
 
 #####Step 1: Define your command line 
 
-First things first. You want to decide on the command syntax. How do
-you want your command to look in the job file? Create a sample job file using the following link
+First things first. You want to decide on the command syntax. 
+How do you want your command to look in the job file? 
+Create a sample job file using the following  link.
 
 https://github.intel.com/GSAE/gtax/blob/master/Quick-Start.md#create-simple-job-files.
+
 For our example
 we'll be creating a generic test command launcher. We'll assume our
 test will exist in the tests share under a directory(i.e plugin / test). It will contain
