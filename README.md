@@ -756,7 +756,17 @@ plugin_name = "cmd"
 plugin = runner.load_plugin(plugin_name)
 ```
 ---
+----
+#####`.log_msg(message)`
+logs a message to the `results.txt` file
 
+Example usage:
+
+```python
+# logs message 
+runner.log_msg('Return code is not zero - failing task')
+```
+----
 #####`.log_comment(msg)`
 Logs a comment to the `results.txt` file.
 
@@ -802,6 +812,25 @@ Example usage:
 print(runner.rconfigs_dir())
 ```
 
+----
+#####`.download_assets()`
+This downloads all the pending assets to be downloaded that were set as  auto_download = False. It returns the number of assets downloaded. If no assets were downloaded, it returns 0.
+
+
+Example usage:
+
+```python
+runner.download_assets()
+```
+----
+#####`.download_asset(asset_key)`
+This performs the download of the specified  asset key . If  asset key  is not inside the dictionary pre-defined in  get_assets() , an exception will be thrown.
+
+Example usage:
+
+```python
+runner.download_asset("artifactory_asset")
+```
 ----
 #####`.renv(name, value-None,timeout='0s')`
 Returns the value of the named environment variable, or a default value (if supplied) if the environment variable doesn't exist.  
@@ -998,6 +1027,3 @@ task_id = runner.setting('task_id')
 timeout = int(runner.setting('timeout', 0))
 ```
 ---
-
-
-
