@@ -131,15 +131,17 @@ test needs to do. GTA-X exposes a number of helper functions to
 aid in doing common things. The best way to learn what to do is to look
 at other plugins and see how they are doing things.
 
-Given below, we have three different versions of sample plugin based on the operation system you run the plugin. There are few  differences in the plugin content based on each of these versions.
+Given below, we have three different versions of sample plugin based on the platform you run the plugin. There are few  differences in the plugin content based on each of these versions.
 
 Following are the few  observations to make :
 
-Batch file is used for windows where as shell script is used for linux machine
-The path seperator in windows machine is '\' where as in linux the path seperator is '/'
-Windows accept '/' as path seperator. So '/' is used  for   cross platform plugin
+Batch file is used for windows where as shell script is used for linux machine.
 
-To check the the platform in which our DUT (TC ) is running 
+The path seperator in windows machine is '\' where as in linux the path seperator is '/'.
+
+Windows accepts '/' as path seperator. So '/' is used as a path seperator  when  cross platform plugin is created.
+
+To check the the platform on which our DUT (TC ) is running 
  Use the following code.
  ```python
        os_type = runner.client_setting("os_type")
@@ -536,7 +538,7 @@ Define the following assets in your sample plugin and try
 ```
 Note: if you receive 'Download failed with return code 1'. Make sure that the artifact is actually present at the url mentioned.
 
-Sign in  to Quickbuild UI  before trying to retrieve the asset from quick build.
+First time users should sign in  to Quickbuild UI  before trying to retrieve the asset from quick build.
 
 ####Job File Syntax
 In a job.txt file, asset attributes must use the following syntax:
