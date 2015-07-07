@@ -150,7 +150,7 @@ To check the the platform on which our DUT (TC ) is running. Use the following c
        else:
           runbat = os.path.join(test_dir, 'run.sh')
           print("DUT OS type is Linux/Mac")
-          cmd = './run.sh'   
+          cmd = './run.sh'
     ```
 Following sample plugin content  runs on windows.
 ```python
@@ -220,7 +220,7 @@ Following sample plugin content  runs on windows.
         return 'pass'
     else:
         runner.log_msg('Return code is not zero - failing task')
-        return 'fail' 
+        return 'fail'
 ```
 
 Following  sample plugin content  runs on  Linux  machine.
@@ -304,8 +304,8 @@ Following  sample plugin content  runs on  Linux  machine.
     runner.add_result('stderr: ', proc.stderr)
     runner.log_msg('exit code: ' + str(proc.exit_code))
     runner.log_msg('stdout: ' + proc.stdout)
-    if proc.stderr: 
-        runner.log_msg('stderr: ' + proc.stderr) 
+    if proc.stderr:
+        runner.log_msg('stderr: ' + proc.stderr)
 
     # Return pass or fail depending on what the exit code was
     if proc.exit_code == 0:
@@ -401,7 +401,7 @@ Following  is  the sample cross platform plugin content.
     runner.log_msg('exit code: ' + str(proc.exit_code))
     runner.log_msg('stdout: ' + proc.stdout)
     if proc.stderr:
-     runner.log_msg('stderr: ' + proc.stderr) 
+     runner.log_msg('stderr: ' + proc.stderr)
     # Return pass or fail depending on what the exit code was
     if proc.exit_code == 0:
         return 'pass'
