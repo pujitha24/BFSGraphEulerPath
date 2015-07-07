@@ -41,28 +41,25 @@ There is possibility to automatically add some hooks to all jobs submitted by Co
 ###How to Create a Plugin
 In the following section, we'll walk through the process of creating a
 plugin. If you follow this example and check out the available functions
-in tools/gta/runner/runner.py (see class TaskRunner), you'll be on your way
+in gtax/runner/runner.py (see class TaskRunner), you'll be on your way
 to writing custom plugins.
 
-#####Step 1: Define your command line 
-
-First things first. You want to decide on the command syntax. 
-How do you want your command to look in the job file? 
+#####Step 1: Define your command line
+First things first. You want to decide on the command syntax.
+How do you want your command to look in the job file?
 Create a sample job file using the following  link.
 
-https://github.intel.com/GSAE/gtax/blob/master/Quick-Start.md#create-simple-job-files.
+https://github.intel.com/GSAE/gtax-runner/blob/master/Quick-Start.md#create-simple-job-files.
 
 For our example
 we'll be creating a generic test command launcher. We'll assume our
 test will exist in the tests share under a directory(i.e plugin / test). It will contain
 a BAT file named run.bat that will return zero if the test passed and
-non-zero if the test fails. Note : We use bat files to run on windows machine. 
+non-zero if the test fails. Note : We use bat files to run on windows machine.
 Here what we assume the syntax will be:
-
 `test_runbat mytestfolder`
 
-Here mytestfolder is the folder where we place our test_runbat plugin. 
-
+Here mytestfolder is the folder where we place our test_runbat plugin.
 To run the plugin on Linux machine, we should create a shell script file instead of batch. create a  sample shell script(run.sh) as shown below. Do not try to create  or open the following shell script on windows machine as it produces unexpected results.
 ```python
     #!/bin/sh
@@ -70,8 +67,7 @@ To run the plugin on Linux machine, we should create a shell script file instead
 ```
 Place this run.sh, In the same folder where our plugin is present
 
-#####Step 2: Create the Python plugin file 
-
+#####Step 2: Create the Python plugin file
 If you were to run a job file now using this plugin, you would get an error
 saying the plugin test_runbat.py does not exist. On our server, we create
 the file `plugins/test_runbat.py` and add the following lines:
@@ -144,8 +140,7 @@ The path seperator in windows machine is '\' where as in linux the path seperato
 
 Windows accepts '/' as path seperator. So '/' is used as a path seperator  when  cross platform plugin is created.
 
-To check the the platform on which our DUT (TC ) is running 
- Use the following code.
+To check the the platform on which our DUT (TC ) is running. Use the following code.
  ```python
        os_type = runner.client_setting("os_type")
        if "windows" in os_type:
@@ -156,19 +151,15 @@ To check the the platform on which our DUT (TC ) is running
           runbat = os.path.join(test_dir, 'run.sh')
           print("DUT OS type is Linux/Mac")
           cmd = './run.sh'   
-```
-Following sample plugin content  runs on windows. 
- 
-
-
+    ```
+Following sample plugin content  runs on windows.
 ```python
         """
     test_runbat test_folder [optional_args...]
     Description:
     Generic test plugin that copies    tests/test_folder to the client and
-    then runs tests/test_folder/run.bat. The exit code determines pass/fail 
-    (0 is pass, non-zero is fail).Inside the run.bat script, 
-    the unique line ID + any optional parameters are passed into the script.
+    then runs tests/test_folder/run.bat. The exit code determines pass/fail(0 is pass, non-zero is fail).
+    Inside the run.bat script, the unique line ID + any optional parameters are passed into the script.
     Examples:
     # Runs tests/Performance11/run.bat task_id
     test_runbat Performance11
@@ -185,10 +176,9 @@ Following sample plugin content  runs on windows.
     # This adds a line to the results.txt file like:
     #     --err_msg: [message]
     # For convenience, we also print a log message to the Runner console
-	    
-	if test_dir == '':
-	   runner.add_error('You must specify a test folder - Ex: test_runbat myfolder')
-	   return 'fail'
+    if test_dir == '':
+       runner.add_error('You must specify a test folder - Ex: test_runbat myfolder')
+       return 'fail'
 
 	    # We create a couple of path variables and verify the test script
 	    # exists on runner machine
@@ -197,9 +187,9 @@ Following sample plugin content  runs on windows.
 	   runner.add_error('Cannot find batch file ' + runbat)
 	   runner.log_msg('Cannot find batch file: ' + runbat)
 	   return 'fail'
-	  # Always place executable tests in a folder underneath the folder returned by 
-    # rtests_dir().  This is where tests are stored on the DUT.  
-    remote_dir = runner.rtests_dir()  + '\\' + test_dir
+	  # Always place executable tests in a folder underneath the folder returned by
+	  # rtests_dir().  This is where tests are stored on the DUT.
+	remote_dir = runner.rtests_dir()  + '\\' + test_dir
 
 	  # We synchronize the test folder down onto the test system by using
 	  # runner.rpush(). This function pushes files from the controller to
@@ -214,7 +204,7 @@ Following sample plugin content  runs on windows.
     runner.add_result('wd', remote_dir)
 
     # Now we actually run the test. We use the runner.rexecute() call to
-    # execute a command on the DUT. 
+    # execute a command on the DUT.
     proc = runner.rexecute(cmd, cwd=remote_dir)
 
     # Add exit code, stdout and stderr to results.txt and Runner console
@@ -223,19 +213,17 @@ Following sample plugin content  runs on windows.
     runner.add_result('stderr: ', proc.stderr)
     runner.log_msg('exit code: ' + str(proc.exit_code))
     runner.log_msg('stdout: ' + proc.stdout)
-    if proc.stderr: 
-        runner.log_msg('stderr: ' + proc.stderr) 
-
+    if proc.stderr:
+      runner.log_msg('stderr: ' + proc.stderr)
     # Return pass or fail depending on what the exit code was
     if proc.exit_code == 0:
         return 'pass'
     else:
         runner.log_msg('Return code is not zero - failing task')
         return 'fail' 
-	     
 ```
 
-Following  sample plugin content  runs on  Linux  machine. 
+Following  sample plugin content  runs on  Linux  machine.
 ```python
 
 	"""
@@ -278,15 +266,15 @@ Following  sample plugin content  runs on  Linux  machine.
 
     # We verify the test script exists on the Runner machine
     # Create sample shell script run.sh on linux machine and copy it to plugin
-    # folder 
+    # folder
     runbat = os.path.join(test_dir, 'run.sh')
     if not os.path.exists(runbat):
         runner.add_error('Cannot find batch file: ' + runbat)
         runner.log_msg('Cannot find batch file: ' + runbat)
         return 'fail'
 
-    # Always place executable tests in a folder underneath the folder returned by 
-    # rtests_dir().  This is where tests are stored on the DUT.  
+    # Always place executable tests in a folder underneath the folder returned by
+    # rtests_dir().  This is where tests are stored on the DUT.
     print(runner.rtests_dir())
     #Linux machine recognizes forward slash. the working directory format for linux
     #is /home/bin/bash
@@ -307,7 +295,7 @@ Following  sample plugin content  runs on  Linux  machine.
     runner.add_result('wd', remote_dir)
     print (remote_dir)
     # Now we actually run the test. We use the runner.rexecute() call to
-    # execute a command on the DUT. 
+    # execute a command on the DUT.
     proc = runner.rexecute(cmd, cwd=remote_dir)
 
     # Add exit code, stdout and stderr to results.txt and Runner console
@@ -327,7 +315,7 @@ Following  sample plugin content  runs on  Linux  machine.
         return 'fail'
 ```
 
-Following  is  the sample cross platform plugin content.   
+Following  is  the sample cross platform plugin content.
 ```python
 
 	"""
@@ -377,17 +365,17 @@ Following  is  the sample cross platform plugin content.
     else:
         runbat = os.path.join(test_dir, 'run.sh')
         print("DUT OS type is Linux/Mac")
-        cmd = './run.sh'  
-    # We verify the test script exists on the Runner machine
+        cmd = './run.sh'
+        # We verify the test script exists on the Runner machine
     if not os.path.exists(runbat):
         runner.add_error('Cannot find batch file: ' + runbat)
         runner.log_msg('Cannot find batch file: ' + runbat)
         return 'fail'
 
-    # Always place executable tests in a folder underneath the folder returned by 
-    # rtests_dir().  This is where tests are stored on the DUT.  
+    # Always place executable tests in a folder underneath the folder returned by
+    # rtests_dir().  This is where tests are stored on the DUT.
     print(runner.rtests_dir())
-    #Linux/window  machine recognizes forward slash. 
+    #Linux/window  machine recognizes forward slash.
     #Though windows machine directory format has backward slash.
     #it recognizes the forward slash
     remote_dir = runner.rtests_dir()  + '/' + test_dir
@@ -404,7 +392,7 @@ Following  is  the sample cross platform plugin content.
     runner.add_result('wd', remote_dir)
     print (remote_dir)
     # Now we actually run the test. We use the runner.rexecute() call to
-    # execute a command on the DUT. 
+    # execute a command on the DUT.
     proc = runner.rexecute(cmd, cwd=remote_dir)
     # Add exit code, stdout and stderr to results.txt and Runner console
     runner.add_result('exit_code: ', proc.exit_code)
@@ -412,9 +400,8 @@ Following  is  the sample cross platform plugin content.
     runner.add_result('stderr: ', proc.stderr)
     runner.log_msg('exit code: ' + str(proc.exit_code))
     runner.log_msg('stdout: ' + proc.stdout)
-    if proc.stderr: 
-        runner.log_msg('stderr: ' + proc.stderr) 
-
+    if proc.stderr:
+     runner.log_msg('stderr: ' + proc.stderr) 
     # Return pass or fail depending on what the exit code was
     if proc.exit_code == 0:
         return 'pass'
@@ -455,7 +442,7 @@ Here is an example dictionary for an asset with key "artifactory_asset" in the V
              "asset_version": "2.14.3",
              "asset_name": "DUTPrepare"
         },
-```        
+```
 Note that four attributes can be specified for assets coming from the VPG Global Asset Store.  GTA-X expects different asset properties, depending on the type of source asset repository.   The next section details GTA-X expected asset properties for each type of repository.
 
 #####Required Asset Properties - VPG Global Asset Store
@@ -500,7 +487,6 @@ For assets residing on an HTTP server, the following properties must be specifie
 
 Note:  for **root_url**, we use a specially formatted URL (prefix is 'qb+webcache:'), which indicates we are accessing an asset stored on an HTTP server.
 Before retrieving the  assets stored at HTTP  server, Open the url mentioned and check if you are authorized user or not.
- 
 #####Required Asset Properties - Local directory or file share
 For assets not stored in Artifactory or Quickbuild, a "local_url" attribute is required:
 
@@ -519,7 +505,7 @@ In order for GTA-X runner to download appropriate assets/test contents for your 
 
 Here is an example of the `get_assets()` method, which specifies 3 assets with the following keys: "artifactory_asset", "qb_gtax", and "local_driver". NOTE: This is not how plugins would typically look, it is simply showing the different types of assets that a plugin can define and the attributes that are associated with each type.
 
-Define the following assets in your sample plugin and try 
+Define the following assets in your sample plugin and try
 ```python
     def get_assets(target, line):
      return {
@@ -542,7 +528,6 @@ Define the following assets in your sample plugin and try
 Note: if you receive 'Download failed with return code 1'. Make sure that the artifact is actually present at the url mentioned.
 
 First time users should sign in  to Quickbuild UI  before trying to retrieve the asset from quick build.
-
 ####Job File Syntax
 In a job.txt file, asset attributes must use the following syntax:
 `<plugin_name>.asset.<asset_key>.<asset_property>`
@@ -558,7 +543,7 @@ Here is an example job, which specifies **asset_name** and **asset_version** pro
 	-test_samp.asset.artificatory_asset.asset_version: 1.3
 
 	[tests]
-	# invoke plugin, Here plugins is the folder in which my test_samp is created 
+	# invoke plugin, Here plugins is the folder in which my test_samp is created
 	test_samp plugins
 ```
 
@@ -568,13 +553,13 @@ Recall that asset attributes values in a job will override identical asset value
 For example, the following job attribute:
 
     -test_samp.asset.artifactory_asset.asset_name:
-    GfxRegistryManager 
+    GfxRegistryManager
 
 will override the asset_name dictionary value returned by the `get_assets()` method in the `test_samp` plugin:
 
 ```python
     { "artifactory_asset":
-    	{ 
+    	{
     	    "asset_name": "DUTPrepare",
              "asset_version":"2.14.3"
     }
@@ -763,7 +748,7 @@ logs a message to the `results.txt` file
 Example usage:
 
 ```python
-# logs message 
+# logs message
 runner.log_msg('Return code is not zero - failing task')
 ```
 ----
@@ -893,7 +878,7 @@ remote_path = runner.rmakedirs(remote_path)
 ---
 
 #####`.rpull(src, dest, timeout='0s')`
-Pulls files from the source to the destination path. 
+Pulls files from the source to the destination path.
 Example usage:
 
 ```python
@@ -929,7 +914,7 @@ if install_object['reboot']:
 ---
 
 #####`.rremove(path,timeout='0s')`
-Removes the specified directory tree or file path from controller or test machine. 
+Removes the specified directory tree or file path from controller or test machine.
 
 Example usage:
 
@@ -951,8 +936,7 @@ runner.rcopy('some-dir', 'some-other-existing-dir/some-NON-existing-dir')
 ---
 
 #####`.rexecute(cmd, cwd='.', expect_disconnect=False, timeout='0s', shell=True)`
-Executes a command via the shell. 
-
+Executes a command via the shell.
 Example usage:
 
 ```python
@@ -1017,7 +1001,7 @@ if status == 'pass' and args.reboot:
 ---
 
 #####`.setting(name, value=None)`
-Returns the job setting or a default value (if supplied) if the setting doesn't exist. 
+Returns the job setting or a default value (if supplied) if the setting doesn't exist.
 
 Example usage:
 
