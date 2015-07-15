@@ -49,23 +49,22 @@ First things first. You want to decide on the command syntax.
 How do you want your command to look in the job file?
 Create a sample job file using the following  link.
 
-https://github.intel.com/GSAE/gtax-runner/blob/master/Quick-Start.md#create-simple-job-files.
+https://github.intel.com/GSAE/gtax-runner/blob/master/Quick-Start.md.
 
 For our example
 we'll be creating a generic test command launcher. We'll assume our
-test will exist in the tests share under a directory(i.e plugin / test). It will contain
-a BAT file named run.bat that will return zero if the test passed and
-non-zero if the test fails. Note : We use bat files to run on windows machine.
+test will exist in the tests share under a directory(e.g., mytestfolder / test). It will contain
+a BAT file named run.bat that will print "hello world". Note: We use bat files to run on windows machine. 
 Here what we assume the syntax will be:
 `test_runbat mytestfolder`
 
 Here mytestfolder is the folder where we place our test_runbat plugin.
-To run the plugin on Linux machine, we should create a shell script file instead of batch. create a  sample shell script(run.sh) as shown below. Do not try to create  or open the following shell script on windows machine as it produces unexpected results.
+To run the plugin on Linux machine, we should create a shell script file instead of a batch. Create a  sample shell script(run.sh) as shown below. Do not create/edit  Linux shell scripts on a Windows machine as Windows/Linux new line differences produce unexpected results.
 ```python
     #!/bin/sh
      echo "hello world"
 ```
-Place this run.sh, In the same folder where our plugin is present
+Place this run.sh in the same folder where our plugin is present
 
 #####Step 2: Create the Python plugin file
 If you were to run a job file now using this plugin, you would get an error
@@ -132,16 +131,16 @@ at other plugins and see how they are doing things.
 
 Given below, we have three different versions of sample plugin based on the platform you run the plugin. There are few  differences in the plugin content based on each of these versions.
 
-Following are the few  observations to make :
+Following are a few  observations:
 
-Batch file is used for windows where as shell script is used for linux machine.
+Batch file is used for Windows where as shell script is used for Linux machine.
 
-The path seperator in windows machine is '\' where as in linux the path seperator is '/'.
+The path seperator in Windows machine is '\' where as in Linux the path seperator is '/'.
 
 Windows accepts '/' as path seperator. So '/' is used as a path seperator  when  cross platform plugin is created.
 
 To check the the platform on which our DUT (TC ) is running. Use the following code.
- ```python
+  ```python
        os_type = runner.client_setting("os_type")
        if "windows" in os_type:
           runbat = os.path.join(test_dir, 'run.bat')
@@ -151,70 +150,83 @@ To check the the platform on which our DUT (TC ) is running. Use the following c
           runbat = os.path.join(test_dir, 'run.sh')
           print("DUT OS type is Linux/Mac")
           cmd = './run.sh'
-    ```
+```
 Following sample plugin content  runs on windows.
+
 ```python
-        """
-    test_runbat test_folder [optional_args...]
-    Description:
-    Generic test plugin that copies    tests/test_folder to the client and
-    then runs tests/test_folder/run.bat. The exit code determines pass/fail(0 is pass, non-zero is fail).
-    Inside the run.bat script, the unique line ID + any optional parameters are passed into the script.
-    Examples:
+"""
+test_runbat test_folder [optional_args...]
+
+Description:
+    Generic test plugin that copies tests/test_folder to the client and
+    then runs tests/test_folder/run.bat. The exit code determines pass/
+    fail (0 is pass, non-zero is fail).
+
+   Inside the run.bat script, the unique line ID + any optional
+   parameters are passed into the script.
+
+Examples:
+
     # Runs tests/Performance11/run.bat task_id
     test_runbat Performance11
-    # Runs tests/3DMark11/run.bat task_id   perf_preset.xml
+
+    # Runs tests/3DMark11/run.bat task_id perf_preset.xml
     test_runbat 3DMark11 perf_preset.xml
-    Note:  This sample plugin is intended for use with a Windows DUT
-      """
-    import os
-    def run(runner, line):
+
+ Note:  This sample plugin is intended for use with a Windows DUT
+"""
+import os
+import re
+
+def run(runner, line):
     # First get the test directory we will be running. Since we only
-    # have one argument on the line, the test_dir is the whole line test_dir = line
+    # have one argument on the line, the test_dir is the whole line
+    test_dir = line
+
     # Now we check the parameters and make sure they are valid. If we
     # detect an error we use the GTA-X helper function runner.add_error().
     # This adds a line to the results.txt file like:
     #     --err_msg: [message]
     # For convenience, we also print a log message to the Runner console
     if test_dir == '':
-       runner.add_error('You must specify a test folder - Ex: test_runbat myfolder')
-       return 'fail'
+        runner.add_error('You must specify a test folder - Ex: test_runbat myfolder')
+        runner.log_msg('You must specify a test folder - Ex: test_runbat myfolder')
+        return 'fail'
 
-	    # We create a couple of path variables and verify the test script
-	    # exists on runner machine
-	runbat = os.path.join(test_dir, 'run.bat')
-	if not os.path.exists(runbat):
-	   runner.add_error('Cannot find batch file ' + runbat)
-	   runner.log_msg('Cannot find batch file: ' + runbat)
-	   return 'fail'
-	  # Always place executable tests in a folder underneath the folder returned by
-	  # rtests_dir().  This is where tests are stored on the DUT.
-	remote_dir = runner.rtests_dir()  + '\\' + test_dir
+    # We verify the test script exists on the Runner machine
+    runbat = os.path.join(test_dir, 'run.bat')
+    if not os.path.exists(runbat):
+        runner.add_error('Cannot find batch file: ' + runbat)
+        runner.log_msg('Cannot find batch file: ' + runbat)
+        return 'fail'
 
-	  # We synchronize the test folder down onto the test system by using
-	  # runner.rpush(). This function pushes files from the controller to
-	  # the test system. It only pushes files that are different
-	  # so the first time it may take a while but all other calls will be
-	  # quick.
-	runner.rpush(test_dir, remote_dir)
-	   # Define our command string and add some test results to the results.txt
+    # Always place executable tests in a folder underneath the folder returned by 
+    # rtests_dir().  This is where tests are stored on the DUT.  
+    remote_dir = runner.rtests_dir()  + '\\' + test_dir
+
+    # We synchronize the test folder down onto the test system by using
+    # runner.rpush(). This function pushes files from the controller to
+    # the test system. It only pushes files that are different
+    # so the first time it may take a while but all other calls will be
+    # quick.
+    runner.rpush(test_dir, remote_dir)
+
+    # Define our command string and add some test results to the results.txt
     # file using runner.add_result().
     cmd = 'run.bat'
     runner.add_result('cmd', cmd)
     runner.add_result('wd', remote_dir)
-
     # Now we actually run the test. We use the runner.rexecute() call to
     # execute a command on the DUT.
     proc = runner.rexecute(cmd, cwd=remote_dir)
-
     # Add exit code, stdout and stderr to results.txt and Runner console
-    runner.add_result('exit_code: ', proc.exit_code)
     runner.add_result('stdout: ', proc.stdout)
     runner.add_result('stderr: ', proc.stderr)
     runner.log_msg('exit code: ' + str(proc.exit_code))
     runner.log_msg('stdout: ' + proc.stdout)
     if proc.stderr:
-      runner.log_msg('stderr: ' + proc.stderr)
+       runner.log_msg('stderr: ' + proc.stderr) 
+
     # Return pass or fail depending on what the exit code was
     if proc.exit_code == 0:
         return 'pass'
@@ -222,6 +234,11 @@ Following sample plugin content  runs on windows.
         runner.log_msg('Return code is not zero - failing task')
         return 'fail'
 ```
+
+
+
+
+
 
 Following  sample plugin content  runs on  Linux  machine.
 ```python
@@ -320,8 +337,7 @@ Following  is  the sample cross platform plugin content.
 
 	"""
         test_runbat test_folder [optional_args...]
-
-         Description:
+        Description:
     Generic test plugin that copies tests/test_folder to the client and
     then runs tests/test_folder/run.sh. The exit code determines pass/
     fail (0 is pass, non-zero is fail).
@@ -525,9 +541,9 @@ Define the following assets in your sample plugin and try
             }
         }
 ```
-Note: if you receive 'Download failed with return code 1'. Make sure that the artifact is actually present at the url mentioned.
+Note: if you receive 'Download failed with return code 1'. Make sure that the artifact is actually present in Artifactory. Go to http://gfx-assets.intel.com, select the Artifacts tab and browse the repositories to verify your asset exists.
 
-First time users should sign in  to Quickbuild UI  before trying to retrieve the asset from quick build.
+First time users should sign in  to http://ubit-gsae.intel.com  before trying to retrieve the asset from quick build.
 ####Job File Syntax
 In a job.txt file, asset attributes must use the following syntax:
 `<plugin_name>.asset.<asset_key>.<asset_property>`
@@ -536,10 +552,9 @@ Here is an example job, which specifies **asset_name** and **asset_version** pro
 ```python
 	# set asset properties, using the following syntax:
 	#     <plugin_name>.asset.<asset_key>.<asset_property>
-	#
-    # Changing the asset_name  to the GfxRegistryManager
-    -test_samp.asset.artifactory_asset.asset_name: GfxRegistryManager
-      # Changing to version 1.3
+	# Changing the asset_name  to the GfxRegistryManager
+        -test_samp.asset.artifactory_asset.asset_name: GfxRegistryManager
+        # Changing to version 1.3
 	-test_samp.asset.artificatory_asset.asset_version: 1.3
 
 	[tests]
@@ -743,7 +758,7 @@ plugin = runner.load_plugin(plugin_name)
 ---
 ----
 #####`.log_msg(message)`
-logs a message to the `results.txt` file
+Logs a message to the `results.txt` file
 
 Example usage:
 
