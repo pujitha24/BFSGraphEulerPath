@@ -200,8 +200,8 @@ def run(runner, line):
         runner.log_msg('Cannot find batch file: ' + runbat)
         return 'fail'
 
-    # Always place executable tests in a folder underneath the folder returned by 
-    # rtests_dir().  This is where tests are stored on the DUT.  
+    # Always place executable tests in a folder underneath the folder returned by
+    # rtests_dir().  This is where tests are stored on the DUT.
     remote_dir = runner.rtests_dir()  + '\\' + test_dir
 
     # We synchronize the test folder down onto the test system by using
@@ -225,7 +225,7 @@ def run(runner, line):
     runner.log_msg('exit code: ' + str(proc.exit_code))
     runner.log_msg('stdout: ' + proc.stdout)
     if proc.stderr:
-       runner.log_msg('stderr: ' + proc.stderr) 
+       runner.log_msg('stderr: ' + proc.stderr)
 
     # Return pass or fail depending on what the exit code was
     if proc.exit_code == 0:
