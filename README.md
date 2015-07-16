@@ -53,7 +53,7 @@ https://github.intel.com/GSAE/gtax-runner/blob/master/Quick-Start.md.
 
 For our example
 we'll be creating a generic test command launcher. We'll assume our
-test will exist in the tests share under a directory(e.g., mytestfolder / test). It will contain
+test will exist in the tests shared under a directory(e.g., mytestfolder / test). It will contain
 a BAT file named run.bat that will print "hello world". Note: We use bat files to run on windows machine. 
 Here what we assume the syntax will be:
 `test_runbat mytestfolder`
