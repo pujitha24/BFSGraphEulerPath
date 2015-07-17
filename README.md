@@ -110,17 +110,17 @@ of the command. Conventional return values are "pass" and "fail".
 
 The run method is called every time the plugin is listed in a job file. So for
 example let's say you have the following lines in a job file:
-
+ ```
     test_runbat mytestfolder
     test_runbat mytestfolder2
     test_runbat mytestfolder2
-
+```
 The test_runbat plug-in would be run three times:
-
+```
     => test_runbat.run([object], "mytestfolder")
     => test_runbat.run([object], "mytestfolder2")
     => test_runbat.run([object], "mytestfolder2")
-
+```
 #####Step 3: Add Your Plugin Content
 
 Now we get to the meaty part of the plug-in. You get to write the script
@@ -129,7 +129,7 @@ test needs to do. GTA-X exposes a number of helper functions to
 aid in doing common things. The best way to learn what to do is to look
 at other plugins and see how they are doing things.
 
-Given below, we have three different versions of sample plugin based on the platform you run the plugin. There are few  differences in the plugin content based on each of these versions.
+Given below, we have three different versions of the same sample plugin based on the platform you want to run the plugin on.
 
 Following are a few  observations:
 
@@ -567,8 +567,7 @@ The above job assumes that that **root_url** and **asset_path** properties for t
 Recall that asset attributes values in a job will override identical asset values specified in a plugin.
 For example, the following job attribute:
 
-    -test_samp.asset.artifactory_asset.asset_name:
-    GfxRegistryManager
+    -test_samp.asset.artifactory_asset.asset_name: GfxRegistryManager
 
 will override the asset_name dictionary value returned by the `get_assets()` method in the `test_samp` plugin:
 
