@@ -832,7 +832,8 @@ runner.download_asset("artifactory_asset")
 ```
 ----
 #####`.renv(name, value-None,timeout='0s')`
-Returns the value of the named environment variable, or a default value (if supplied) if the environment variable doesn't exist.  
+Returns the value of the named environment variable, or a default value (if supplied) if the environment variable doesn't exist.
+
 Example usage:
 
 ```python
@@ -879,7 +880,8 @@ if runner.risdir(vnc_path):
 ---
 
 #####`.rmakedirs(path, timeout='0s')`
-This method is a recursive directory creation function. It makes all intermediate-level directories needed to contain the leaf directory and returns the absolute path.  
+This method is a recursive directory creation function. It makes all intermediate-level directories needed to contain the leaf directory and returns the absolute path.
+
 Example usage:
 
 ```python
@@ -891,6 +893,7 @@ remote_path = runner.rmakedirs(remote_path)
 
 #####`.rpull(src, dest, timeout='0s')`
 Pulls files from the source to the destination path.
+
 Example usage:
 
 ```python
