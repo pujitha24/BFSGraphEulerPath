@@ -32,10 +32,10 @@ Here's how hooks work:
 
 * All hook files need to be placed in plugin/hooks directory of gtax tool.
 * In job.txt file runner is checking hooks attribute (e.g. -hooks: vpg_results,api_notifications), and adding to events list available events in hook files (basing on methods name "on(job|tasklist|task)(start|end)").
-* In job.txt  more then one hook can be provided through a comma separated list of hook file names (e.g. -hooks: vpg_results,controller_notifications)
+* In job.txt  more than one hook can be provided through a comma separated list of hook file names (e.g. -hooks: vpg_results,api_notifications)
 * When runner is calling event (e.g. onjobstart), all connected events are called (e.g. all onjobstart methods from all hooks)
 
-There is possibility to automatically add some hooks to all jobs submitted by Runner. Runner has JOB_DEFAULT_HOOKS setting, which has some default hooks, but it could be extended to support additional hooks e.g. controller_notifications,vpg_results.
+There is possibility to automatically add some hooks to all jobs submitted by Runner. Runner has JOB_DEFAULT_HOOKS setting, which has some default hooks, but it could be extended to support additional hooks
 
 
 ###How to Create a Plugin
