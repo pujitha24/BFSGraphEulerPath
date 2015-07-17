@@ -26,16 +26,16 @@ Here's how GTA-X interacts with the command plug-ins:
   3.  When the command plug-in exits, GTA-X continues executing the next line in the job file until all job tasks are completed.
 
 
-GTA-X has support for some special plugins (called hooks), which are designed to make some additional operations during events send by runner e.g. onjobstart, ontaskend etc. It could be used for e.g. custom results reporting.
+GTA-X has support for some special plugins (called hooks), which are designed to make some additional operations during events sent by runner e.g. onjobstart, ontaskend etc. It could be used for e.g. custom results reporting.
 
 Here's how hooks work:
 
 * All hook files need to be placed in plugin/hooks directory of gtax tool.
-* In job.txt file runner is checking hooks attribute (e.g. -hooks: vpg_results,controller_notifications), and adding to events list available events in hook files (basing on methods name "on(job|tasklist|task)(start|end)").
-* In job.txt could be provided more then one hook - it's comma separated list of hook file names (e.g. -hooks: vpg_results,controller_notifications)
+* In job.txt file runner is checking hooks attribute (e.g. -hooks: vpg_results,api_notifications), and adding to events list available events in hook files (basing on methods name "on(job|tasklist|task)(start|end)").
+* In job.txt  more then one hook can be provided through a comma separated list of hook file names (e.g. -hooks: vpg_results,controller_notifications)
 * When runner is calling event (e.g. onjobstart), all connected events are called (e.g. all onjobstart methods from all hooks)
 
-There is possibility to automatically add some hooks to all jobs submitted by Controller UI/API. Controller has JOB_DEFAULT_HOOKS setting, which by default is set to controller_notifications, but it could be extended to longer list of default hooks e.g. controller_notifications,vpg_results. Use Controller's /settings POST endpoint to edit this.
+There is possibility to automatically add some hooks to all jobs submitted by Runner. Runner has JOB_DEFAULT_HOOKS setting, which has some default hooks, but it could be extended to support additional hooks e.g. controller_notifications,vpg_results.
 
 
 ###How to Create a Plugin
@@ -47,24 +47,24 @@ to writing custom plugins.
 #####Step 1: Define your command line
 First things first. You want to decide on the command syntax.
 How do you want your command to look in the job file?
-Create a sample job file using the following  link.
+Create a sample job file using the following  link:
 
 https://github.intel.com/GSAE/gtax-runner/blob/master/Quick-Start.md.
 
 For our example
 we'll be creating a generic test command launcher. We'll assume our
-test will exist in the tests shared under a directory(e.g., mytestfolder / test). It will contain
-a BAT file named run.bat that will print "hello world". Note: We use bat files to run on windows machine. 
-Here what we assume the syntax will be:
+test will exist in the tests  (e.g., mytestfolder). It will contain
+a BAT file named run.bat that will print "hello world". Note: We use BAT files to run on windows machines.
+Here  is what we assume the syntax of our plugin will be:
 `test_runbat mytestfolder`
 
-Here mytestfolder is the folder where we place our test_runbat plugin.
-To run the plugin on Linux machine, we should create a shell script file instead of a batch. Create a  sample shell script(run.sh) as shown below. Do not create/edit  Linux shell scripts on a Windows machine as Windows/Linux new line differences produce unexpected results.
+Here mytestfolder is the folder where we place our test_runbat plugin and run.bat file.
+To run the plugin on Linux machine, we should create a shell script file instead of a batch script file. Create a  sample shell script (run.sh) as shown below. Do not create/edit  Linux shell scripts on a Windows machine as Windows/Linux new line differences produce unexpected results.
 ```python
     #!/bin/sh
      echo "hello world"
 ```
-Place this run.sh in the same folder where our plugin is present
+Place this run.sh in mytestfolder
 
 #####Step 2: Create the Python plugin file
 If you were to run a job file now using this plugin, you would get an error
@@ -133,7 +133,7 @@ Given below, we have three different versions of sample plugin based on the plat
 
 Following are a few  observations:
 
-Batch file is used for Windows where as shell script is used for Linux machine.
+Batch file is used for Windows, where as shell script is used for Linux.
 
 The path seperator in Windows machine is '\' where as in Linux the path seperator is '/'.
 
@@ -151,7 +151,7 @@ To check the the platform on which our DUT (TC ) is running. Use the following c
           print("DUT OS type is Linux/Mac")
           cmd = './run.sh'
 ```
-Following sample plugin content  runs on windows.
+Following sample plugin content  runs on Windows.
 
 ```python
 """
@@ -240,13 +240,12 @@ def run(runner, line):
 
 
 
-Following  sample plugin content  runs on  Linux  machine.
+Following  sample plugin content  runs on  Linux.
 ```python
 
 	"""
-        test_runbat test_folder [optional_args...]
-
-         Description:
+	test_runbat test_folder [optional_args...]
+    Description:
     Generic test plugin that copies tests/test_folder to the client and
     then runs tests/test_folder/run.sh. The exit code determines pass/
     fail (0 is pass, non-zero is fail).
@@ -263,7 +262,7 @@ Following  sample plugin content  runs on  Linux  machine.
     test_runbat 3DMark11 perf_preset.xml
 
      Note:  This sample plugin is intended for use with a linux DUT
-       """
+    """
     import os
 
     def run(runner, line):
@@ -336,8 +335,9 @@ Following  is  the sample cross platform plugin content.
 ```python
 
 	"""
-        test_runbat test_folder [optional_args...]
-        Description:
+	test_runbat test_folder [optional_args...]
+	Description:
+
     Generic test plugin that copies tests/test_folder to the client and
     then runs tests/test_folder/run.sh. The exit code determines pass/
     fail (0 is pass, non-zero is fail).
@@ -353,8 +353,8 @@ Following  is  the sample cross platform plugin content.
     # Runs tests/3DMark11/run.sh task_id perf_preset.xml
     test_runbat 3DMark11 perf_preset.xml
 
-     Note:  This sample plugin is intended for use with a Windows DUT
-       """
+     Note:  This sample plugin is intended for use with a Windows  or Linux DUT
+     """
     import os
 
     def run(runner, line):
@@ -502,7 +502,7 @@ For assets residing on an HTTP server, the following properties must be specifie
 | **auto_download** (optional)| Specifies if the asset will be downloaded before the method `run()` in the plugin or if it will be downloaded manually at a specific point in the plugin. Defaults to True if not provided. See [How to specify manual download of an asset](#specify-manual-download-of-an-asset). | True or False
 
 Note:  for **root_url**, we use a specially formatted URL (prefix is 'qb+webcache:'), which indicates we are accessing an asset stored on an HTTP server.
-Before retrieving the  assets stored at HTTP  server, Open the url mentioned and check if you are authorized user or not.
+Before retrieving the  assets stored at HTTP  server, open the url mentioned and check if you are authorized to download it or not.
 #####Required Asset Properties - Local directory or file share
 For assets not stored in Artifactory or Quickbuild, a "local_url" attribute is required:
 
@@ -521,7 +521,7 @@ In order for GTA-X runner to download appropriate assets/test contents for your 
 
 Here is an example of the `get_assets()` method, which specifies 3 assets with the following keys: "artifactory_asset", "qb_gtax", and "local_driver". NOTE: This is not how plugins would typically look, it is simply showing the different types of assets that a plugin can define and the attributes that are associated with each type.
 
-Define the following assets in your sample plugin and try
+Define the following assets in your sample plugin and try it
 ```python
     def get_assets(target, line):
      return {
@@ -553,8 +553,8 @@ Here is an example job, which specifies **asset_name** and **asset_version** pro
 	# set asset properties, using the following syntax:
 	#     <plugin_name>.asset.<asset_key>.<asset_property>
 	# Changing the asset_name  to the GfxRegistryManager
-        -test_samp.asset.artifactory_asset.asset_name: GfxRegistryManager
-        # Changing to version 1.3
+	-test_samp.asset.artifactory_asset.asset_name: GfxRegistryManager
+	# Changing to version 1.3
 	-test_samp.asset.artificatory_asset.asset_version: 1.3
 
 	[tests]
@@ -834,7 +834,6 @@ runner.download_asset("artifactory_asset")
 ----
 #####`.renv(name, value-None,timeout='0s')`
 Returns the value of the named environment variable, or a default value (if supplied) if the environment variable doesn't exist.  
-
 Example usage:
 
 ```python
@@ -870,7 +869,7 @@ if not runner.rexists(fulsim_path):
 ---
 
 #####`.risdir(path, timeout='0s')`
-Returns `True` if the given `path` on the test  is an existing directory. Otherwise returns `False`.
+Returns `True` if the given `path` on the test machine is an existing directory. Otherwise returns `False`.
 
 Example usage:
 
@@ -882,7 +881,6 @@ if runner.risdir(vnc_path):
 
 #####`.rmakedirs(path, timeout='0s')`
 This method is a recursive directory creation function. It makes all intermediate-level directories needed to contain the leaf directory and returns the absolute path.  
-
 Example usage:
 
 ```python
@@ -904,7 +902,7 @@ if not runner.rpull(stdout_file, runner.path('logs_dir')):
 ---
 
 #####`.rpush(src, dest, timeout='0s')`
-Pushes files from the controller to the test system. It only pushes files that are different so the first time it may take a while but all other calls will be quick.
+Pushes files from the runner to the test system. It only pushes files that are different so the first time it may take a while but all other calls will be quick.
 
 Example usage:
 
@@ -929,7 +927,7 @@ if install_object['reboot']:
 ---
 
 #####`.rremove(path,timeout='0s')`
-Removes the specified directory tree or file path from controller or test machine.
+Removes the specified directory tree or file path from test machine.
 
 Example usage:
 
